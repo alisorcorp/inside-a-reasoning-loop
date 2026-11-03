@@ -1,0 +1,92 @@
+# Dose test (alpha 0/1/2/6, teacher-forced) and averaged J-lens readouts at loop vs stop decisions, base and edited weights.
+## alpha 0
+loop_wait: 9 samples, mean log p(Wait) -0.00, mean log p(</think>) -22.92
+close: 10 samples, mean log p(Wait) -15.57, mean log p(</think>) -1.09
+prod_wait: 8 samples, mean log p(Wait) -1.21, mean log p(</think>) -16.80
+## alpha 1
+loop_wait: 9 samples, mean log p(Wait) -0.01, mean log p(</think>) -20.96
+close: 10 samples, mean log p(Wait) -15.55, mean log p(</think>) -1.01
+prod_wait: 8 samples, mean log p(Wait) -1.24, mean log p(</think>) -16.67
+## alpha 2
+loop_wait: 9 samples, mean log p(Wait) -0.02, mean log p(</think>) -18.87
+close: 10 samples, mean log p(Wait) -15.49, mean log p(</think>) -0.89
+prod_wait: 8 samples, mean log p(Wait) -1.27, mean log p(</think>) -16.57
+## alpha 6
+loop_wait: 9 samples, mean log p(Wait) -0.46, mean log p(</think>) -12.96
+close: 10 samples, mean log p(Wait) -15.36, mean log p(</think>) -0.61
+prod_wait: 8 samples, mean log p(Wait) -1.41, mean log p(</think>) -16.23
+
+########## jdec_base
+
+== layer 9
+  loop decision: [' Cinema', ' Ts', ' Folder', ' Cloud', ' Sphere', ' continent', ' Slide', ' Festival', ' Container', ' Project', ' Film', ' DSM', ' Rita', ' Feast', ' Module']
+  stop decision: ['!', '<|endoftext|>', '.', '!**', '!"', '!".', ' Video', ' video', '！', '".', ' $', ' Movie', ' filmmaker', ' my', ' Everest']
+  raised in loop vs stop: [' Santo', '车库', ' Zaragoza', ' theta', ' Angels', 'izou', '¯¯¯¯', '|^', '珠海', ' Theta', ' *>', '<<<', ' DIM', ' María', 'omba']
+  raised in stop vs loop: ['nut', 'crop', 'pie', 't', 'sur', 'c', 'sensor', 'tie', 'sampling', 'nuts', 'sel', 'myp', 'sour', 'mess', 'nep']
+
+== layer 12
+  loop decision: ['?', ' ->', ' Wait', '?"', ' ?.', ' wait', '?!', ' Final', ' Google', ' ?', '"?', ' Conclusion', ' ???', ' �', '?**']
+  stop decision: ['".', '<|endoftext|>', '.', '!', '**.', '!".', '".**', '!**', '."', ' :)', ' Sample', ' text', '.**', '!"', '**:']
+  raised in loop vs stop: ['θ', ' θ', ' Cala', 'phan', ' Angels', '?”', 'だら', '<<<', ' ‘', ' María', '珠海', ' queens', ' Santo', ' **‘', ' ^']
+  raised in stop vs loop: ['学史', '.):', 's', 'tive', 'tos', 'sav', 'ioms', 'tique', 'tie', 'simp', 'tives', 'sur', '$:', 't', 'sample']
+
+== layer 15
+  loop decision: [' Wait', 'Wait', ' wait', ' WAIT', 'WAIT', 'wait', ' Waiting', ' Okay', ' Wrong', ' Wow', ' Wrap', ' Nope', ' Hmm', ' Repeat', ' Maybe']
+  stop decision: ['.**', '<|endoftext|>', ' "$', '!**', '".**', '!</', '.</', '?</', '。</', '$x', '-read', '**!', 'ครับ', '</think>', ' Writing']
+  raised in loop vs stop: [' Than', ' Wait', ' Unknown', ' Poor', ' Worse', ' Wh', ' worse', ' Over', ' Vers', '…”', ' Wrong', ' Nope', ' Uns', '?”,', ' Whereas']
+  raised in stop vs loop: ['<|endoftext|>', '-secondary', 's', '-information', 'secondary', 'ing', 'inals', '-primary', '-linear', '-book', '-products', '-management', 'iop', ' pedag', 'sse']
+
+== layer 17
+  loop decision: [' Wait', 'Wait', ' WAIT', ' wait', 'wait', 'WAIT', ' Okay', ' Waiting', ' Wow', ' Wrong', ' Hmm', ' Nope', '_wait', ' Oops', ' Maybe']
+  stop decision: ['!**', ' Wait', ' WAIT', '.**', ' Answer', 'Wait', ':**', '(Note', ' Response', '!</', 'wait', '**(', '。**', ' Outputs', '(Optional']
+  raised in loop vs stop: [' Yeah', ' Nope', '…”', ' Hos', ' Whereas', '”*,', ' Wrong', ' Hmm', ' Fru', ' Aver', ' Worse', '这么说', ' Right', 'Ồ', ' YES']
+  raised in stop vs loop: ['s', '<|endoftext|>', 'ing', '$c', ' lead', 'inals', '.):', '-script', ' :</', ' instructions', 'o', '-box', ':</', 'iop', '!:']
+
+== layer 19
+  loop decision: [' Wait', 'Wait', ' WAIT', ' wait', 'wait', 'WAIT', ' Waiting', '(wait', '_wait', ' Wrong', '.Wait', ' Await', ' Okay', ' waits', '等待']
+  stop decision: ['</think>', '   ', '**', '    \n', '</', '**(', ' Response', ' Outputs', ' Output', '(Double', '.**', '!**', ' Formatting', '       ', '   \n']
+  raised in loop vs stop: [' Wait', ' wait', 'Wait', ' Wrong', 'wait', ' Nope', ' Waiting', ' Wa', 'WAIT', ' WAIT', ' Wash', ' Wis', 'upt', '_wait', ' Wh']
+  raised in stop vs loop: ['   ', '    \n', 'ing', '\n', '       ', '</', '</think>', '**', 'nung', 'omens', '     ', '号为', 'o', ' cinemas', 'sia']
+
+== layer 21
+  loop decision: [' Wait', ' wait', 'Wait', ' WAIT', ' Waiting', 'WAIT', 'wait', ' Okay', '(wait', ' Wrong', ' Await', '.Wait', ' Ready', ' Actually', '_wait']
+  stop decision: ['   ', '</think>', '    \n', '       ', '     ', '(Double', '        \n', ' Format', '           ', '   \n', ' Double', ' Output', ' Wait', '      \n', ' Answer']
+  raised in loop vs stop: [' Wait', ' wait', ' Waiting', ' Ah', 'Wait', ' Well', ' Wrong', ' Nope', ' Okay', '等一下', ' Right', ' Wh', ' Anyway', 'wait', ' Hmm']
+  raised in stop vs loop: ['   ', '    \n', 'nung', 'olding', '       ', '     ', 'omens', '</think>', 'ivity', 'scription', 'ing', 'sf', '           ', 'si', 'ification']
+########## jdec_a6
+
+== layer 9
+  loop decision: [' Cinema', ' Ts', ' Folder', ' Cloud', ' Sphere', ' continent', ' Slide', ' Festival', ' Container', ' Project', ' Film', ' DSM', ' Rita', ' Feast', ' Module']
+  stop decision: ['!', '<|endoftext|>', '.', '!**', '!"', '!".', ' Video', ' video', '！', '".', ' $', ' Movie', ' filmmaker', ' my', ' Everest']
+  raised in loop vs stop: [' Santo', '车库', ' Zaragoza', ' theta', ' Angels', 'izou', '¯¯¯¯', '|^', '珠海', ' Theta', ' *>', '<<<', ' DIM', ' María', 'omba']
+  raised in stop vs loop: ['nut', 'crop', 'pie', 't', 'sur', 'c', 'sensor', 'tie', 'sampling', 'nuts', 'sel', 'myp', 'sour', 'mess', 'nep']
+
+== layer 12
+  loop decision: ['?', ' ->', ' Wait', '?"', ' ?.', ' wait', '?!', ' Final', ' Google', ' ?', '"?', ' Conclusion', ' ???', ' �', '?**']
+  stop decision: ['".', '<|endoftext|>', '.', '!', '**.', '!".', '".**', '!**', '."', ' :)', ' Sample', ' text', '.**', '!"', '**:']
+  raised in loop vs stop: ['θ', ' θ', ' Cala', 'phan', ' Angels', '?”', 'だら', '<<<', ' ‘', ' María', '珠海', ' queens', ' Santo', ' **‘', ' ^']
+  raised in stop vs loop: ['学史', '.):', 's', 'tive', 'tos', 'sav', 'ioms', 'tique', 'tie', 'simp', 'tives', 'sur', '$:', 't', 'sample']
+
+== layer 15
+  loop decision: [' Wait', 'Wait', ' wait', ' WAIT', ' Verification', 'WAIT', ' Repeat', ' Wrap', ' Wow', ' Unexpected', ' Waiting', ' Completion', ' Wikipedia', 'wait', ' Validation']
+  stop decision: ['<|endoftext|>', '.**', ' "$', '!**', '!</', '.</', '".**', '。</', '?</', '$x', '-read', 'ครับ', '</think>', ' Writing', '**!']
+  raised in loop vs stop: ['”,', ',”', ' Unknown', ' Wh', ' Thus', ' Vers', ' Whereas', '…”', ' Wid', '”，', ' With', '”*,', ' Yet', ' Than', ' Vel']
+  raised in stop vs loop: ['-secondary', 's', 'ing', '<|endoftext|>', 'secondary', '-information', 'iop', 'е', '|int', '-management', 'siz', '$x', '-food', " #'", '-primary']
+
+== layer 17
+  loop decision: [' Wait', 'Wait', ' WAIT', ' wait', ' Waiting', ' Verification', ' Completion', ' Okay', ' Complexity', ' Notice', ' Wow', 'WAIT', 'wait', ' Final', ' Validation']
+  stop decision: ['!**', ' Wait', ' WAIT', '.**', ' Answer', 'Wait', ':**', '(Note', '!</', ' Response', '**(', 'wait', '(Optional', '。**', ' Outputs']
+  raised in loop vs stop: ['”,', ' Whereas', ' Thus', ' Aver', ' Yet', ' Rach', ' Years', '”*,', ' Reach', ' Vers', ' Discover', ' Rounds', ' Fru', ' With', ' Right']
+  raised in stop vs loop: ['s', 'iop', 'o', 'si', '$i', "#'", '-secondary', '!', '$c', '-start', '!**', 'iog', '-msg', '。)', 'oi']
+
+== layer 19
+  loop decision: [' Wait', 'Wait', ' WAIT', ' wait', ' Waiting', ' Seems', ' Verification', ' Okay', ' Await', 'WAIT', ' Calculation', ' Looks', ' Final', ' Verified', 'wait']
+  stop decision: ['</think>', '   ', '**', '    \n', '</', ' Outputs', ' Response', ' Output', '**(', ' Formatting', '       ', '(Double', '   \n', '.**', ' Responses']
+  raised in loop vs stop: [' Nope', ' Through', ' Around', ' Yet', ' Wait', ' Yes', ' Ah', ' Alright', ' Wrong', ' Yep', ' wait', 'Through', ' Yeah', ' YES', ' Well']
+  raised in stop vs loop: ['   ', '**', '    \n', '</', '\n', '</think>', '       ', 'si', '<', '<message', '     ', '**(', 'o', 'nung', 'ing']
+
+== layer 21
+  loop decision: [' Wait', ' wait', ' This', ' WAIT', ' Waiting', ' Looks', ' Seems', ' Okay', ' Final', ' Result', ' Ready', 'Wait', ' Await', ' Finally', ' Correct']
+  stop decision: ['   ', '</think>', '    \n', '       ', '     ', '        \n', '   \n', '(Double', ' Format', ' Output', ' Answer', '      \n', ' Double', ' Complexity', '      ']
+  raised in loop vs stop: [' Through', ' Alright', ' Anyway', ' Around', ' Yet', ' Rounds', ' Ah', ' Wait', ' Okay', ' Others', ' Nope', ' Across', ' Waiting', ' Lots', ' wait']
+  raised in stop vs loop: ['   ', '    \n', '**', '       ', '     ', '</think>', 'nung', '<', '子是', 'si', '           ', '        \n', '(phase', '**(', 'scription']

@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What Qwen is thinking when it gets stuck saying "Wait"</title>
+<meta name="description" content="Jacobian-lens readouts of Qwen3.5-0.8B at the token where it decides to write &quot;Wait&quot; again, before and after GPT-6 Astra's weight edit.">
+<meta property="og:title" content="What Qwen is thinking when it gets stuck saying &quot;Wait&quot;">
+<meta property="og:description" content="What Qwen3.5-0.8B is thinking when it loops, read through the Jacobian lens, and what GPT-6 Astra's weight edit changes.">
+<meta property="og:image" content="https://alisorcorp.github.io/inside-a-reasoning-loop/assets/fig-1-wait-moment.png">
+<meta property="og:url" content="https://alisorcorp.github.io/inside-a-reasoning-loop/">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Schibsted+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+<script>try { const t = localStorage.getItem("theme"); if (t === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
+<style>
+/* Dark is the page default for every visitor; light is an explicit opt-in via the toggle. */
+:root {
+  --paper: #1A1917;
+  --plate: #222120;
+  --ink: #ECE8E0;
+  --ink-2: #C9C3B8;
+  --muted: #A39D92;
+  --rule: #3B3833;
+  --chip: #2A2826;
+  --chip-line: #4B4740;
+  --model: #EA8B6E;
+  --bubble: #2D2320;
+  --bubble-line: #5B3E33;
+  --lens: #94AAE6;
+  --lens-fill: #2A3352;
+  --lit: #2A2F40;
+  --doubt: #EC8A72;
+  --settle: #71C79A;
+  --bar-dim: #4B5884;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --read: "Literata", Georgia, "Times New Roman", serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --col: 41rem;
+  --wide: 70rem;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --paper: #EDEAE3; --plate: #F7F5F0; --ink: #23211E; --ink-2: #4E4A43; --muted: #6F6A61; --rule: #D3CDC2;
+  --chip: #FFFDF9; --chip-line: #C9C2B5; --model: #B94E33; --bubble: #FAEEE8; --bubble-line: #E5BDAE;
+  --lens: #4F6DBA; --lens-fill: #DCE3F4; --lit: #E6EAF5; --doubt: #A93E27; --settle: #23704A; --bar-dim: #A7B4D6;
+  color-scheme: light;
+}
+.theme-toggle { font: inherit; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+.theme-toggle:hover { color: var(--ink-2); }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.68 var(--read);
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+::selection { background: var(--lens-fill); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--lens); outline-offset: 3px; border-radius: 4px; }
+a { color: var(--lens); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+code, .mono, .chip, .bubble, .row .depth, .chart svg text { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: var(--col); margin-inline: auto; }
+.wide { max-width: var(--wide); margin-inline: auto; }
+
+.masthead { padding-block: clamp(2.5rem, 7vw, 5rem) 1.75rem; }
+.masthead h1 { font: 800 clamp(2.4rem, 6.4vw, 4.1rem)/1.02 var(--display); letter-spacing: -0.03em; margin: 0 0 1.1rem; text-wrap: balance; }
+.dek { font: 400 clamp(1.15rem, 2.1vw, 1.35rem)/1.5 var(--read); color: var(--ink-2); margin: 0 0 1.2rem; max-width: 36em; }
+.meta { font: 500 0.88rem/1.6 var(--display); color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0; padding: 0; list-style: none; }
+.meta a { color: var(--muted); }
+
+article h2 { font: 700 clamp(1.45rem, 2.6vw, 1.75rem)/1.2 var(--display); letter-spacing: -0.015em; margin: 3.2rem 0 0.9rem; text-wrap: balance; }
+article p { margin: 0 0 1.1rem; }
+article ul { margin: 0 0 1.2rem; padding-left: 1.2rem; }
+article li { margin-bottom: 0.45rem; }
+.lede p:first-child { font-size: 1.12rem; }
+.toc { font: 500 0.88rem/1.5 var(--display); display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin: 1.6rem 0 0.4rem; padding: 0.9rem 0 0; border-top: 1px solid var(--rule); list-style: none; }
+.toc a { color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--lens); text-decoration: underline; }
+
+/* figures */
+figure.plate { margin: 2.2rem auto 2.4rem; max-width: var(--wide); background: var(--paper); border: 1.5px solid var(--rule); border-radius: 18px;
+  padding: clamp(1.25rem, 3vw, 2.25rem) clamp(0.9rem, 2.6vw, 2.25rem) 1.4rem; display: grid; gap: 1.3rem; }
+.plate-title { font: 800 clamp(1.25rem, 2.6vw, 1.85rem)/1.15 var(--display); letter-spacing: -0.015em; text-align: center; margin: 0; text-wrap: balance; }
+figcaption { font: 400 0.95rem/1.55 var(--read); color: var(--ink-2); max-width: 46rem; margin: 0; text-align: start;  text-wrap: pretty; }
+figcaption b { color: var(--ink); font-weight: 600; }
+figcaption .fig-label { font: 700 0.95rem/1 var(--display); color: var(--ink); margin-right: 0.35rem; }
+.plate-source { display: none; font: 500 0.8rem/1.3 var(--display); color: var(--muted); }
+html.export .plate-source { display: block; }
+.png-link { font: 500 0.82rem/1 var(--display); color: var(--muted); justify-self: start; }
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1.4rem; }
+.panel { min-width: 0; display: grid; gap: 0.6rem; align-content: start; }
+.panel-label { font: 500 1rem/1.2 var(--display); color: var(--muted); padding-left: 0.4rem; }
+.box { background: var(--plate); border: 1.5px solid var(--rule); border-radius: 16px; overflow: hidden; position: relative; }
+.bubble-wrap { padding: 1.2rem 1.2rem 1.5rem; border-bottom: 1.5px solid var(--rule); }
+.bubble { background: var(--bubble); border: 1.5px solid var(--bubble-line); border-radius: 14px; padding: 0.85rem 1rem;
+  font: 400 0.9rem/1.75 var(--mono); color: var(--model); white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.bubble .old { opacity: 0.5; }
+.bubble mark { background: var(--lens-fill); color: var(--lens); font-weight: 400; outline: 2px solid var(--lens); border-radius: 3px; display: inline-block; min-width: 1.15ch; line-height: 1.25; margin: 0 0.3ch; }
+.bubble .next { font-weight: 700; }
+.lens-table { margin: 1rem; border: 1.5px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--plate); }
+.row { display: grid; grid-template-columns: 4.8rem 1fr; border-top: 1px solid var(--rule); transition: background-color .25s ease; }
+.row:first-child { border-top: 0; }
+.row > * { padding: 0.55rem 0.75rem; min-width: 0; }
+.row .depth { font: 400 0.84rem/1.9 var(--mono); color: var(--muted); text-align: right; border-right: 1px solid var(--rule); font-variant-numeric: tabular-nums; cursor: default; }
+.row.head > * { font: 500 0.72rem/1.4 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.row.head .depth { text-align: left; white-space: nowrap; letter-spacing: 0.04em; }
+.row.lit { background: var(--lit); }
+.row.lit .depth { color: var(--lens); font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chip { font: 400 0.84rem/1.2 var(--mono); padding: 0.3rem 0.62rem; border: 1.5px solid var(--chip-line); border-radius: 999px; background: var(--chip); color: var(--ink); white-space: pre; }
+.chip.key { font-weight: 700; }
+.chip.doubt { color: var(--doubt); border-color: color-mix(in srgb, var(--doubt) 50%, var(--chip-line)); font-weight: 700; }
+.chip.settle { color: var(--settle); border-color: color-mix(in srgb, var(--settle) 50%, var(--chip-line)); font-weight: 700; }
+.chip .p { color: var(--muted); font-weight: 400; margin-left: 0.4rem; font-variant-numeric: tabular-nums; }
+.chip.new { animation: sweep 1.4s cubic-bezier(.16,1,.3,1) 1; }
+@keyframes sweep { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--settle) 55%, transparent); } 100% { box-shadow: 0 0 0 10px transparent; } }
+svg.wire { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+svg.wire path { fill: none; stroke: var(--lens); stroke-width: 2; stroke-dasharray: 4 5; }
+
+/* direction figure */
+.poles { display: grid; grid-template-columns: 1fr minmax(7rem, auto) 1fr; gap: 1.1rem; align-items: center; }
+.pole { display: grid; gap: 0.6rem; min-width: 0; }
+.pole h3 { margin: 0; font: 700 0.98rem/1.2 var(--display); }
+.pole.left h3 { color: var(--doubt); text-align: right; }
+.pole.right h3 { color: var(--settle); }
+.pole.left .chips { justify-content: flex-end; }
+.axis-mid { font: 500 0.82rem/1.4 var(--display); color: var(--muted); text-align: center; display: grid; justify-items: center; gap: 0.3rem; }
+.axis-mid svg { width: 7rem; height: 1rem; color: var(--ink-2); }
+.gloss { color: var(--muted); font-weight: 400; margin-left: 0.35rem; }
+
+/* charts */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1.8rem; }
+.chart { min-width: 0; display: grid; gap: 0.35rem; align-content: start; }
+.chart h3 { margin: 0; font: 700 0.98rem/1.3 var(--display); }
+.chart .sub { margin: 0 0 0.3rem; font: 400 0.86rem/1.5 var(--read); color: var(--muted); }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart svg text { fill: var(--muted); font: 400 12px var(--mono); }
+.chart svg text.val { fill: var(--ink); font-weight: 700; }
+.chart svg .grid { stroke: var(--rule); stroke-width: 1; }
+.chart svg .base { stroke: var(--muted); stroke-width: 1; }
+.chart svg .zero { stroke: var(--muted); stroke-width: 1.5; }
+.chart svg .move { stroke: var(--muted); stroke-width: 2; }
+.legend { display: flex; gap: 1rem; font: 500 0.82rem/1 var(--display); color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 3px; margin-right: 0.4rem; vertical-align: -0.08rem; background: var(--sw); }
+
+.method li { font-size: 0.98rem; }
+footer.site { border-top: 1px solid var(--rule); margin-top: 3.5rem; padding-block: 1.6rem 3rem; font: 400 0.9rem/1.6 var(--read); color: var(--muted); }
+footer.site p { margin: 0 0 0.6rem; }
+
+@media (max-width: 40rem) {
+  figure.plate { border: 0; border-radius: 0; padding-inline: 0; background: transparent; }
+  .lens-table { margin: 0; border-radius: 0; border-inline: 0; border-bottom: 0; }
+  .bubble-wrap { padding: 0.9rem; }
+  .poles { grid-template-columns: 1fr; }
+  .pole.left h3 { text-align: left; }
+  .pole.left .chips { justify-content: flex-start; }
+  .axis-mid { justify-items: start; text-align: left; }
+  .row { grid-template-columns: 4.2rem 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .chip.new { animation: none; } .row { transition: none; } }
+/* raw tokens must show as typed: no programming ligatures (the font shorthand above resets these) */
+.chip, .bubble, .row .depth, code, .chart svg text { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead col">
+    <h1>What Qwen is thinking when it gets stuck saying "Wait"</h1>
+    <p class="dek">Qwen3.5-0.8B re-checks its own answer until it runs out of tokens. Reading its internal state with Anthropic's Jacobian lens, at the token where it decides to check again, turns up "Wrong", "Nope" and "Hmm" even though it has already written its answer. GPT-6 Astra's weight edit pushes against that doubt six times over and cuts the loops by 86%. Removing it once, the usual abliteration recipe, cuts them by about a third.</p>
+    <ul class="meta">
+      <li>November 3, 2026</li>
+      <li><a href="https://rikiyat.github.io/blog/weight-space-programming/">The Astra paper</a></li>
+      <li><a href="https://github.com/RikiyaT/lm_understand-logs">Its released logs</a></li>
+      <li><a href="https://github.com/alisorcorp/inside-a-reasoning-loop/tree/main/code">Code and data</a></li>
+      <li>Done with Claude Opus 5.5</li>
+      <li><button class="theme-toggle" id="theme-toggle" type="button">Light page</button></li>
+    </ul>
+  </header>
+
+  <article>
+    <figure class="plate" id="fig1" aria-labelledby="fig1-title">
+      <h2 class="plate-title" id="fig1-title">The token before another "Wait", with and without Astra's edit</h2>
+      <noscript><img src="assets/fig-1-wait-moment.png" alt="Figure 1: lens readouts at the token before an in-loop Wait, original weights vs Astra's edit" style="max-width:100%;height:auto"></noscript>
+      <div class="panels" data-link="fig1"></div>
+      <figcaption><span class="fig-label">Figure 1.</span>One looping generation from the authors' released outputs (<code>gsm8k_test_63</code>, indentation shortened). The lens reads the residual stream at the boxed token, just before the model writes "Wait" again. Rows are depth through the model's 24 layers, and <b>Final</b> is the model's own next-token prediction. Left, the original weights. Right, the same text read with Astra's edit applied: "Wait" falls from 100% to 75%, "Done" enters the list, and <span style="color:var(--settle);font-weight:600">verification and completion</span> show up from 62% depth on.</figcaption>
+      <div class="plate-source">Qwen3.5-0.8B · Jacobian lens (Neuronpedia) · alisorcorp.github.io/inside-a-reasoning-loop</div>
+      <a class="png-link" href="assets/fig-1-wait-moment.png">PNG</a>
+    </figure>
+
+    <div class="col lede">
+      <p>On November 2, Rikiya Takehi, Jayden Teoh, Alex Zhang and Omar Khattab posted a set of experiments in which GPT-6 Astra reads and edits neural network weights. The one that drew the most attention on <a href="https://news.ycombinator.com/item?id=50341174">Hacker News</a> has Astra find why Qwen3.5-0.8B loops on math problems and fix it by changing 0.016% of its weights, which took MATH-500 from 7.9% to 48.1%.</p>
+      <p>A lot of the thread decided the fix was abliteration: find a direction, project it out. The authors released the diff, so the edit can be rebuilt exactly, run locally, and read through the Jacobian lens at the token where the model decides to loop.</p>
+      <p>Astra's edit subtracts one direction six times over from 64 neurons in each of two layers, so those neurons now push the opposite way at five times their old strength. Removing the direction once, the abliteration recipe, barely moves the model's odds at a single loop point, though over a full generation it still cuts loops by about a third. Astra's version cuts them by 86%. Through the lens you can see what the edit changes. At the token before another "Wait", the unedited model has nothing but "Wait" and doubt in mind, and the edited one adds "Verification", "Completion" and "Result".</p>
+      <p>Claude Opus 5.5 did the work behind this page on my laptop and a mini PC. It rebuilt the edit, wrote and ran every script, spotted the alpha-6 structure in the diff, and ran the evals.</p>
+      <ul class="toc" aria-label="Contents">
+        <li><a href="#loop">The loop</a></li>
+        <li><a href="#decide">Keep checking or stop</a></li>
+        <li><a href="#edit">What the edit is</a></li>
+        <li><a href="#dose">Why removal isn't enough</a></li>
+        <li><a href="#quant">Quantization</a></li>
+        <li><a href="#method">Method and limits</a></li>
+      </ul>
+    </div>
+
+
+    <div class="col">
+      <h2 id="loop">The loop</h2>
+      <p>In the authors' evaluation the unedited model ran out of its 32,768-token budget on 93% of MATH-500 answers. Read a few of those texts and they end the same way. The model reaches an answer, checks it, and checks it again, writing "Wait, $140 * 6 = $840." for thousands of tokens. The authors' sampling includes a presence penalty of 1.5, which can't break a cycle like this because every token in it has already appeared and carries the same flat penalty.</p>
+      <p>The decision to loop happens at one token (here the whitespace after the bullet), where the model chooses between another "Wait" and moving on. That's where the lens reads in the figure above. The unedited model puts essentially all of its probability on "Wait", and from about 60% depth on, the lens finds little else in its workspace.</p>
+
+      <h2 id="decide">Keep checking or stop</h2>
+      <p>To see what's specific to looping, the comparison below uses two kinds of decision point in the unedited model's own generations: the token before an in-loop "Wait" in 8 looping texts, and the token before <code>&lt;/think&gt;</code> in 8 texts that finished. The lens readouts below are averaged over each group.</p>
+    </div>
+
+    <figure class="plate" id="fig2" aria-labelledby="fig2-title">
+      <h2 class="plate-title" id="fig2-title">Deciding to keep checking vs. deciding to stop</h2>
+      <noscript><img src="assets/fig-2-loop-vs-stop.png" alt="Figure 2: averaged lens readouts at loop decisions vs stop decisions" style="max-width:100%;height:auto"></noscript>
+      <div class="panels" data-link="fig2"></div>
+      <figcaption><span class="fig-label">Figure 2.</span>Averaged lens readouts from the unedited model at the token before an in-loop "Wait" (left, 8 generations) and before <code>&lt;/think&gt;</code> in a finished answer (right, 8 generations). Loop points hold <span style="color:var(--doubt);font-weight:600">self-doubt</span>, and stop points hold the presentation of the answer. Case variants of "Wait" and whitespace or markup-only tokens are left out, and the rest are in rank order.</figcaption>
+      <div class="plate-source">Qwen3.5-0.8B · Jacobian lens (Neuronpedia) · alisorcorp.github.io/inside-a-reasoning-loop</div>
+      <a class="png-link" href="assets/fig-2-loop-vs-stop.png">PNG</a>
+    </figure>
+
+    <div class="col">
+      <p>From about 60% depth on, loop points are full of "Wait" plus "Wrong", "Nope" and "Hmm". Stop points hold <code>&lt;/think&gt;</code>, "Answer", "Output" and "Formatting", so at that point the model seems to be thinking about how to present the answer rather than whether it's right. At 50% depth the looping model already has "Final" and "Conclusion" in mind, which makes the later doubt look like something that overrides a decision it had half made. It isn't perfectly clean. "Wait" also turns up at stop points at 71% and 88% depth, and an average over 8 texts hides a lot of variation.</p>
+
+      <h2 id="edit">What the edit is</h2>
+      <p>The released diff for the 50-pass run touches two matrices, the MLP down-projections in layers 15 and 19, and in each one it's exactly rank one. On the 64 edited columns, the component along that single direction ends at −5.0 times its original value, which is W − 6uuᵀW. Astra's own notes call it "top64 alpha6". The 10-pass run used the same kind of edit at alpha 1.5 across 30 matrices.</p>
+    </div>
+
+    <figure class="plate" id="fig3" aria-labelledby="fig3-title">
+      <h2 class="plate-title" id="fig3-title">The direction Astra edited reads as doubt versus results</h2>
+      <noscript><img src="assets/fig-3-direction.png" alt="Figure 3: the edited direction read through the lens, and how the 64 neurons' write changes" style="max-width:100%;height:auto"></noscript>
+      <div class="poles">
+        <div class="pole left"><h3>Second-guessing</h3><div class="chips" id="pole-doubt"></div></div>
+        <div class="axis-mid" aria-hidden="true">
+          <svg viewBox="0 0 112 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h106M9 2.5 3 8l6 5.5M103 2.5 109 8l-6 5.5"/></svg>
+          <span>one direction,<br>layers 15 and 19</span>
+        </div>
+        <div class="pole right"><h3>Results</h3><div class="chips" id="pole-settle"></div></div>
+      </div>
+      <div class="charts">
+        <div class="chart">
+          <h3>What Astra's 64 neurons write along it, inside loops</h3>
+          <p class="sub">Summed write of the edited neurons along the direction, averaged over the last 384 tokens of 40 looping generations. Negative is toward second-guessing.</p>
+          <svg id="push-chart" role="img" aria-label="Layer 15 moves from minus 0.42 to plus 2.08, layer 19 from minus 0.70 to plus 3.50 after the edit."></svg>
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Figure 3.</span>Top: the direction read through the lens at each end (Chinese glosses are mine). A plain logit lens on the same vector gives noise. Bottom: before the edit the neurons push toward second-guessing, about four to five times harder inside loops than in text that goes on to finish. After it they push toward results at five times the strength.</figcaption>
+      <div class="plate-source">Qwen3.5-0.8B · Jacobian lens (Neuronpedia) · alisorcorp.github.io/inside-a-reasoning-loop</div>
+      <a class="png-link" href="assets/fig-3-direction.png">PNG</a>
+    </figure>
+
+    <div class="col">
+      <p>Run through the lens, one end of the direction reads "Actually", "?!" and Chinese tokens meaning roughly "or is it", "actually it's" and "not at all". The other end reads "results", "outcomes" and "calculations". Those 64 neurons were writing toward the doubt end, and much harder in looping text, so flipping them turns the strongest doubt-writers into conclusion-writers.</p>
+      <p>A plain difference of means between looping and finishing activations doesn't find the same direction. Averaged over windows, it lines up with Astra's direction only partly (cosine 0.36 in layer 15 and 0.45 in layer 19). Taken at the exact decision tokens, it barely does (0.17 or less at every layer). The lens reads both as formatting noise. Astra's notes describe matched productive and repetitive contexts plus dose and random-direction controls, which found something a simple average misses.</p>
+
+      <h2 id="dose">Why removal isn't enough</h2>
+      <p>Keeping the same direction and the same 64 neurons and varying only the strength shows how much the size of the push matters. The measure is the model's probability of writing "Wait" at in-loop decision points, teacher-forced on 9 looping generations. Alpha 1 is plain removal.</p>
+    </div>
+
+    <figure class="plate" id="fig4" aria-labelledby="fig4-title">
+      <h2 class="plate-title" id="fig4-title">Plain removal cuts the loops by a third. Astra's flip cuts them by 86%.</h2>
+      <noscript><img src="assets/fig-4-dose.png" alt="Figure 4: probability of Wait by edit strength, and GSM8K loops and correct answers" style="max-width:100%;height:auto"></noscript>
+      <div class="charts">
+        <div class="chart">
+          <h3>Chance of writing "Wait" again, inside a loop</h3>
+          <p class="sub">Same direction and neurons at increasing strength. Teacher-forced on 9 looping generations.</p>
+          <svg id="dose-chart" role="img" aria-label="Probability of Wait at in-loop decision points: 1.00 at alpha 0, 0.99 at alpha 1, 0.98 at alpha 2, 0.63 at alpha 6."></svg>
+        </div>
+        <div class="chart">
+          <h3>40 GSM8K test problems, generated</h3>
+          <p class="sub">Authors' prompt and sampling, 16k-token cap, bf16 GGUF in llama.cpp. Same problems for every model.</p>
+          <div class="legend" aria-hidden="true"><span style="--sw: var(--doubt)">loops</span><span style="--sw: var(--settle)">correct</span></div>
+          <svg id="eval-chart" role="img" aria-label="Loops and correct answers out of 40 for each model."></svg>
+        </div>
+      </div>
+      <figcaption id="fig4-caption"><span class="fig-label">Figure 4.</span>At alpha 1 the model still puts 99% on another "Wait" inside a loop. At alpha 6 it drops to 63%, while "Wait" at checks that lead somewhere useful barely moves (30% to 24%) and the chance of closing the thinking at a real stopping point rises from 34% to 54%. In generation the small single-step shift at α = 1 still adds up over many loop cycles, so plain removal helps, but much less than Astra's edit.</figcaption>
+      <div class="plate-source">Qwen3.5-0.8B · Jacobian lens (Neuronpedia) · alisorcorp.github.io/inside-a-reasoning-loop</div>
+      <a class="png-link" href="assets/fig-4-dose.png">PNG</a>
+    </figure>
+
+    <div class="col">
+      <p id="eval-prose">In generation, on 40 GSM8K test problems, the unedited model looped on 29 and got 8 right. Plain removal (α = 1) looped on 19 and got 13 right. With Astra's edit it looped on 4 and got 19 right, fixing 12 problems and breaking 1. That's more than the teacher-forced numbers suggest. The likely reason is that a slightly lower chance of "Wait" at each cycle compounds over a long loop until the model gets out. Forty problems is a small sample, so read the middle bar as "helps some" rather than an exact third. Every answer the unedited model managed to finish was correct (8 of 8), which fits the paper's reading that the loop hides math the model can already do. The authors report 67% for the edited model at a 32k cap. Most of my gap is probably the 12 edited answers that hit my 16k cap.</p>
+
+      <h2 id="quant">Quantization</h2>
+      <p>The edit converts to GGUF cleanly, and the base and edited bf16 files differ only in the two edited tensors, entry for entry. At Q4_K_M it still holds: 1 loop in 40 and 16 correct. The 4-bit model finishes more often but gets more of its finished answers wrong (16 of 29, against 19 of 24 at bf16). I read that as the usual cost of running a 0.8B model at 4 bits, since the loops stay fixed.</p>
+
+      <h2 id="method">Method and limits</h2>
+      <ul class="method">
+        <li>Model: <code>Qwen/Qwen3.5-0.8B</code> at revision <code>2fc0636</code>, thinking on. The edit was rebuilt with the authors' <code>apply_edit.py</code> from <code>exp8_math/runs/p50c/edit</code>, and every tensor hash matched their evaluated checkpoint.</li>
+        <li>Lens: Neuronpedia's pre-fitted Jacobian lens for this model (233 prompts), read as <code>lm_head(norm(J<sub>l</sub> h))</code> the way <a href="https://github.com/anthropics/jacobian-lens">anthropics/jacobian-lens</a> does it.</li>
+        <li>Texts: the authors' released first samples from the unedited model on GSM8K. Loop points come from a compression-based detector calibrated on their outputs, which caught 85% of answers that never finished and wrongly flagged 1% of the ones that did.</li>
+        <li>Evals: llama.cpp on a mini PC's integrated GPU, 8 parallel slots, the same detector stopping loops early, a 16k-token cap instead of the authors' 32k.</li>
+      </ul>
+      <p>It's one small model, and the samples are small: single examples or 8 to 9 generations for the lens and dose readouts, 40 problems for each eval. The dose test is teacher-forced on text the unedited model wrote, so it measures the next-token choice, not what the edited model would go on to write. The lens shows what a state is disposed to make the model say, which is suggestive and nothing more.</p>
+      <p>Scripts and the figure data are in the <a href="https://github.com/alisorcorp/inside-a-reasoning-loop/tree/main/code">repo</a>.</p>
+    </div>
+  </article>
+
+  <footer class="site col">
+    <p>The edit, generations and logs are from Rikiya Takehi, Jayden Teoh, Alex Zhang and Omar Khattab, <a href="https://rikiyat.github.io/blog/weight-space-programming/">"Sparks of Weight-Space Programming"</a> (MIT CSAIL). The lens method is from Anthropic's <a href="https://transformer-circuits.pub/2026/workspace/index.html">"Verbalizable Representations Form a Global Workspace in Language Models"</a>, and Neuronpedia hosts the pre-fitted lenses. The figure layout follows the style of that paper's figures.</p>
+    <p>Analysis, code and evals by Claude Opus 5.5 (Anthropic).</p>
+  </footer>
+</div>
+
+<script>
+const SETTLE = new Set(["Verification","Verified","Completion","Result","Results","Looks","Seems","Calculation","Done","Final","Conclusion","Answer","Output","Formatting","Format","Response","Writing","Ready","</think>"]);
+const DOUBT = new Set(["Wrong","Nope","Hmm","Maybe","Oops","Worse","Poor","Actually"]);
+const KEY = new Set(["Wait","WAIT","wait","Waiting"]);
+
+function chip(text, cls) {
+  const s = document.createElement("span");
+  s.className = "chip" + (cls ? " " + cls : SETTLE.has(text) ? " settle" : DOUBT.has(text) ? " doubt" : KEY.has(text) ? " key" : "");
+  s.textContent = text;
+  return s;
+}
+function pct(p) { return p < 0.005 ? "<1%" : Math.round(p * 100) + "%"; }
+
+function lensTable(rows, linkGroup) {
+  const t = document.createElement("div");
+  t.className = "lens-table";
+  t.setAttribute("role", "table");
+  t.innerHTML = '<div class="row head" role="row"><div class="depth" role="columnheader">Layer %</div><div role="columnheader">J-space</div></div>';
+  for (const r of rows) {
+    const row = document.createElement("div");
+    row.className = "row"; row.setAttribute("role", "row"); row.dataset.depth = r.depth;
+    const d = document.createElement("div"); d.className = "depth"; d.setAttribute("role", "rowheader"); d.tabIndex = 0;
+    d.textContent = r.depth; d.title = r.depth === "Final" ? "The model's own next-token prediction" : r.depth + "% of the way through the 24 layers";
+    const c = document.createElement("div"); c.className = "chips"; c.setAttribute("role", "cell");
+    r.chips.forEach(x => c.appendChild(x));
+    row.append(d, c); t.appendChild(row);
+  }
+  return t;
+}
+function linkRows(container) {
+  const set = (depth, on) => container.querySelectorAll(`.row[data-depth="${depth}"]`).forEach(r => r.classList.toggle("lit", on));
+  container.querySelectorAll(".row[data-depth]").forEach(r => {
+    const d = r.dataset.depth;
+    r.addEventListener("mouseenter", () => set(d, true));
+    r.addEventListener("mouseleave", () => set(d, false));
+    r.querySelector(".depth").addEventListener("focus", () => set(d, true));
+    r.querySelector(".depth").addEventListener("blur", () => set(d, false));
+  });
+}
+
+// Figure 1: GSM8K test 63, token before an in-loop "Wait". Top-5 lens tokens per row, final = next-token probabilities.
+const F1 = {
+  depths: [["88", 21], ["79", 19], ["71", 17], ["62", 15], ["54", 13]],
+  base: {
+    final: [["Wait", 1.0], ["Okay", 0.0], ["Let", 0.0]],
+    21: ["Wait", "Waiting", "wait", "WAIT", "Ready"], 19: ["Wait", "WAIT", "Waiting", "wait"],
+    17: ["Wait", "WAIT", "Okay", "Waiting", "Wow"], 15: ["Wait", "WAIT", "wait", "Waiting", "Wow"], 13: ["->", "Wait", "?", "？**", "?\""]
+  },
+  edited: {
+    final: [["Wait", 0.7477], ["$", 0.0329], ["This", 0.0226], ["Done", 0.0121]],
+    21: ["Wait", "Waiting", "Looks", "wait", "Result"], 19: ["Wait", "Waiting", "Verification", "wait", "WAIT"],
+    17: ["Wait", "Completion", "Verification", "Verified", "Complexity"], 15: ["Wait", "Verification", "Completion", "Repeat", "Wrap"], 13: ["->", "Wait", "?", "？**", "?\""]
+  }
+};
+function renderFig1() {
+  const host = document.querySelector('[data-link="fig1"]');
+  for (const [key, label] of [["base", "Original weights"], ["edited", "With Astra's edit"]]) {
+    const r = F1[key];
+    const panel = document.createElement("div"); panel.className = "panel";
+    const lab = document.createElement("div"); lab.className = "panel-label"; lab.textContent = label;
+    const box = document.createElement("div"); box.className = "box";
+    const bw = document.createElement("div"); bw.className = "bubble-wrap";
+    const pre = document.createElement("p"); pre.className = "bubble";
+    const old = document.createElement("span"); old.className = "old"; old.textContent = "*   Wait, $140 * 6 = $840.\n";
+    const recent = document.createTextNode("*   Wait, $140 * 6 = $840.\n*");
+    const mk = document.createElement("mark"); mk.textContent = "␣"; mk.title = "The token the lens reads: two spaces of indentation"; mk.setAttribute("aria-label", "whitespace token");
+    const nx = document.createElement("span"); nx.className = "next"; nx.textContent = "Wait";
+    pre.append(old, recent, mk, nx); bw.appendChild(pre);
+    const baseSet = (d) => new Set(F1.base[d] || []);
+    const rows = [{depth: "Final", chips: r.final.map(([t, p]) => { const c = chip(t, t === "Done" ? "settle" : "key"); const s = document.createElement("span"); s.className = "p"; s.textContent = pct(p); c.appendChild(s); return c; })}];
+    for (const [pctLabel, L] of F1.depths) rows.push({depth: pctLabel, chips: r[L].map(t => { const c = chip(t); if (key === "edited" && !baseSet(L).has(t) && SETTLE.has(t)) c.classList.add("will-sweep"); return c; })});
+    const wire = document.createElementNS("http://www.w3.org/2000/svg", "svg"); wire.classList.add("wire"); wire.setAttribute("aria-hidden", "true");
+    wire.appendChild(document.createElementNS("http://www.w3.org/2000/svg", "path"));
+    box.append(bw, lensTable(rows), wire);
+    panel.append(lab, box); host.appendChild(panel);
+  }
+  linkRows(host);
+}
+function drawWires() {
+  document.querySelectorAll("#fig1 .box").forEach(box => {
+    const mk = box.querySelector("mark"), tbl = box.querySelector(".lens-table"), path = box.querySelector("svg.wire path");
+    const b = box.getBoundingClientRect(), m = mk.getBoundingClientRect(), t = tbl.getBoundingClientRect();
+    const head = tbl.querySelector('.row.head > :last-child').getBoundingClientRect();
+    const x1 = m.left + m.width / 2 - b.left, y1 = m.bottom - b.top + 3, x2 = head.left + 18 - b.left, y2 = head.top - b.top + 4;
+    path.setAttribute("d", `M${x1},${y1} C${x1},${y1 + (y2 - y1) * 0.75} ${x2},${y1 + (y2 - y1) * 0.25} ${x2},${y2}`);
+  });
+}
+
+// Figure 2: averaged readouts, 8 generations per group (whitespace and markup tokens omitted).
+function renderFig2() {
+  const L = {
+    loop: {"88": ["Wait", "Waiting", "Okay", "Wrong", "Await", "Ready", "Actually"], "79": ["Wait", "Waiting", "Wrong", "Await", "Okay"], "71": ["Wait", "Okay", "Waiting", "Wow", "Wrong", "Hmm", "Nope", "Oops"], "62": ["Wait", "Waiting", "Okay", "Wrong", "Wow", "Wrap", "Nope", "Hmm"], "50": ["?", "Wait", "Final", "Google", "Conclusion"]},
+    stop: {"88": ["</think>", "(Double", "Format", "Double", "Output", "Wait", "Answer"], "79": ["</think>", "Response", "Outputs", "Output", "(Double", "Formatting"], "71": ["Wait", "Answer", "(Note", "Response", "Outputs", "(Optional"], "62": ["<|endoftext|>", "</think>", "Writing"], "50": [".", "!", ":)", "Sample", "text"]}
+  };
+  const host = document.querySelector('[data-link="fig2"]');
+  for (const [key, label] of [["loop", 'About to write "Wait" inside a loop'], ["stop", "About to write </think> and finish"]]) {
+    const panel = document.createElement("div"); panel.className = "panel";
+    const lab = document.createElement("div"); lab.className = "panel-label"; lab.textContent = label;
+    const box = document.createElement("div"); box.className = "box";
+    box.appendChild(lensTable(["88", "79", "71", "62", "50"].map(d => ({depth: d, chips: L[key][d].map(t => chip(t))}))));
+    panel.append(lab, box); host.appendChild(panel);
+  }
+  linkRows(host);
+}
+
+function renderPoles() {
+  const put = (id, list, cls) => {
+    const el = document.getElementById(id);
+    for (const [t, g] of list) {
+      const c = chip(t, cls);
+      if (g) { const s = document.createElement("span"); s.className = "gloss"; s.textContent = g; c.appendChild(s); }
+      el.appendChild(c);
+    }
+  };
+  put("pole-doubt", [["Actually"], ["?**"], ["?!"], ["还是", "or is it"], ["其实是", "actually it's"], ["根本不是", "not at all"]], "doubt");
+  put("pole-settle", [["results"], ["outcomes"], ["calculations"], ["solutions"], ["formulas"]], "settle");
+}
+
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs, text) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+function withTitle(e, text) { e.appendChild(el("title", {}, text)); return e; }
+
+function fit(svg, h) {
+  svg.replaceChildren();
+  const w = Math.max(300, Math.round(svg.parentElement.getBoundingClientRect().width)) || 560;
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  return w;
+}
+function renderPush() {
+  const svg = document.getElementById("push-chart");
+  const W = fit(svg, 176);
+  const x0 = W < 420 ? 64 : 96, x1 = W - 20, lo = -1, hi = 4, X = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
+  for (const v of [-1, 0, 1, 2, 3, 4]) {
+    svg.appendChild(el("line", {x1: X(v), x2: X(v), y1: 18, y2: 128, class: v === 0 ? "zero" : "grid"}));
+    svg.appendChild(el("text", {x: X(v), y: 148, "text-anchor": "middle"}, (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v)));
+  }
+  [["Layer 15", -0.416], ["Layer 19", -0.700]].forEach(([name, b], i) => {
+    const y = 52 + i * 50, a = -5 * b;
+    svg.appendChild(el("text", {x: 0, y: y + 4}, W < 420 ? name.replace("Layer ", "L") : name));
+    svg.appendChild(el("line", {x1: X(b) + 8, x2: X(a) - 10, y1: y, y2: y, class: "move"}));
+    svg.appendChild(el("path", {d: `M${X(a) - 12},${y - 5} L${X(a) - 4},${y} L${X(a) - 12},${y + 5} Z`, fill: "var(--muted)"}));
+    svg.appendChild(withTitle(el("circle", {cx: X(b), cy: y, r: 6.5, fill: "var(--doubt)", stroke: "var(--paper)", "stroke-width": 2}), `${name} before the edit: −${Math.abs(b).toFixed(2)}`));
+    svg.appendChild(withTitle(el("circle", {cx: X(a), cy: y, r: 6.5, fill: "var(--settle)", stroke: "var(--paper)", "stroke-width": 2}), `${name} after the edit: +${a.toFixed(2)}`));
+    svg.appendChild(el("text", {x: X(b), y: y - 13, "text-anchor": "middle", class: "val"}, "−" + Math.abs(b).toFixed(2)));
+    svg.appendChild(el("text", {x: X(a), y: y - 13, "text-anchor": "middle", class: "val"}, "+" + a.toFixed(2)));
+  });
+  svg.appendChild(el("text", {x: X(-1), y: 170, "text-anchor": "start"}, "← second-guessing"));
+  svg.appendChild(el("text", {x: X(4), y: 170, "text-anchor": "end"}, "results →"));
+}
+
+function bars(svgId, groups, opts) {
+  const svg = document.getElementById(svgId);
+  const W = fit(svg, 262);
+  const left = 40, right = W - 8, top = 26, bottom = 206, Y = v => bottom - v / opts.max * (bottom - top);
+  for (const t of opts.ticks) {
+    svg.appendChild(el("line", {x1: left, x2: right, y1: Y(t), y2: Y(t), class: "grid"}));
+    svg.appendChild(el("text", {x: left - 8, y: Y(t) + 4, "text-anchor": "end"}, opts.fmt(t)));
+  }
+  svg.appendChild(el("line", {x1: left, x2: right, y1: bottom, y2: bottom, class: "base"}));
+  const gw = (right - left) / groups.length;
+  groups.forEach((g, gi) => {
+    const n = g.values.length, bw = Math.max(14, Math.min(44, (gw - 24) / n)), gap = 2;
+    const start = left + gi * gw + (gw - bw * n - gap * (n - 1)) / 2;
+    g.values.forEach((s, si) => {
+      const x = start + si * (bw + gap), y = Y(s.v), h = Math.max(0, bottom - y), r = Math.min(4, h / 2);
+      const d = `M${x},${bottom} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${bottom} Z`;
+      svg.appendChild(withTitle(el("path", {d, fill: s.fill}), s.tip));
+      svg.appendChild(el("text", {x: x + bw / 2, y: y - 7, "text-anchor": "middle", class: "val"}, opts.fmt(s.v)));
+    });
+    svg.appendChild(el("text", {x: left + gi * gw + gw / 2, y: bottom + 20, "text-anchor": "middle"}, g.label));
+    if (g.sub) svg.appendChild(el("text", {x: left + gi * gw + gw / 2, y: bottom + 36, "text-anchor": "middle"}, g.sub));
+  });
+}
+function renderDose() {
+  const v = [["α = 0", "original", 1.00], ["α = 1", "removal", 0.99], ["α = 2", "", 0.98], ["α = 6", "Astra's edit", 0.63]];
+  bars("dose-chart", v.map(([l, s, p]) => ({label: l, sub: s, values: [{v: p, fill: l === "α = 6" ? "var(--lens)" : "var(--bar-dim)", tip: `${l}: p(Wait) ${p.toFixed(2)}`}]})),
+    {max: 1, ticks: [0, 0.25, 0.5, 0.75, 1], fmt: x => x.toFixed(2)});
+}
+const EVAL = [
+  {label: "Original", loops: 29, correct: 8},
+  {label: "Removal", sub: "α = 1", loops: 19, correct: 13},
+  {label: "Astra's edit", sub: "α = 6", loops: 4, correct: 19},
+];
+function renderEval() {
+  bars("eval-chart", EVAL.map(e => ({label: e.label, sub: e.sub, values: [
+    {v: e.loops, fill: "var(--doubt)", tip: `${e.label}: ${e.loops} of 40 stuck in a loop`},
+    {v: e.correct, fill: "var(--settle)", tip: `${e.label}: ${e.correct} of 40 correct`},
+  ]})), {max: 40, ticks: [0, 10, 20, 30, 40], fmt: x => String(Math.round(x))});
+}
+
+renderFig1(); renderFig2(); renderPoles(); renderPush(); renderDose(); renderEval();
+const toggle = document.getElementById("theme-toggle");
+const syncToggle = () => { toggle.textContent = document.documentElement.dataset.theme === "light" ? "Dark page" : "Light page"; };
+syncToggle();
+toggle.addEventListener("click", () => {
+  const light = document.documentElement.dataset.theme !== "light";
+  if (light) document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem("theme", light ? "light" : "dark"); } catch (e) {}
+  syncToggle();
+});
+requestAnimationFrame(drawWires);
+let rt;
+window.addEventListener("resize", () => { requestAnimationFrame(drawWires); clearTimeout(rt); rt = setTimeout(() => { renderPush(); renderDose(); renderEval(); }, 150); });
+document.fonts && document.fonts.ready.then(() => requestAnimationFrame(drawWires));
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.querySelectorAll(".will-sweep").forEach((c, i) => setTimeout(() => c.classList.add("new"), 120 * i)); io.unobserve(e.target); }
+  }), {threshold: 0.4});
+  io.observe(document.getElementById("fig1"));
+}
+</script>
+</body>
+</html>

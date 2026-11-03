@@ -1,0 +1,1196 @@
+{
+ "layers": [
+  13,
+  15,
+  17,
+  19,
+  21
+ ],
+ "n_layers": 24,
+ "cases": [
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_5",
+   "pos": 15329,
+   "token": "  ",
+   "before": ".6^{16} \\approx 0.00028$.\n    *   Wait, $0.6^{16} \\approx 0.00028$.\n    *   Wait, $0.6^{16} \\approx 0.00028$.\n    *",
+   "after": " Wait, $0.6^{16} \\approx 0.00028$.\n    *  ",
+   "base": {
+    "13": [
+     " Wait",
+     "？**",
+     " ->",
+     "...**",
+     "?",
+     "?**"
+    ],
+    "15": [
+     " Wait",
+     " wait",
+     "Wait",
+     " WAIT",
+     " Wow",
+     " Waiting"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " Okay",
+     " Wow",
+     " Waiting"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " Waiting",
+     " wait",
+     "wait"
+    ],
+    "21": [
+     " Wait",
+     " wait",
+     " Waiting",
+     " WAIT",
+     "Wait",
+     " Wrong"
+    ],
+    "final": [
+     [
+      " Wait",
+      1.0
+     ],
+     [
+      "Wait",
+      0.0
+     ],
+     [
+      " Okay",
+      0.0
+     ],
+     [
+      " Let",
+      0.0
+     ],
+     [
+      " WAIT",
+      0.0
+     ],
+     [
+      " Oh",
+      0.0
+     ]
+    ],
+    "p_wait": 0.99998939037323,
+    "p_close": 1.3046274997818852e-11
+   },
+   "edited": {
+    "13": [
+     " Wait",
+     "？**",
+     " ->",
+     "...**",
+     "?",
+     "?**"
+    ],
+    "15": [
+     " Wait",
+     " Repeat",
+     " Wow",
+     " Verification",
+     " Wrap",
+     " Completion"
+    ],
+    "17": [
+     " Wait",
+     " Completion",
+     " Verification",
+     " Complexity",
+     " Wow",
+     " Verified"
+    ],
+    "19": [
+     " Wait",
+     " Calculation",
+     " Verification",
+     " Waiting",
+     " Verified",
+     " wait"
+    ],
+    "21": [
+     " Wait",
+     " Result",
+     " Waiting",
+     " Looks",
+     " Calculation",
+     " Seems"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.7374
+     ],
+     [
+      " This",
+      0.0252
+     ],
+     [
+      " $",
+      0.0223
+     ],
+     [
+      " Result",
+      0.0135
+     ],
+     [
+      " Done",
+      0.0093
+     ],
+     [
+      " Okay",
+      0.0082
+     ]
+    ],
+    "p_wait": 0.7373590469360352,
+    "p_close": 4.125030955037801e-06
+   }
+  },
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_148",
+   "pos": 5202,
+   "token": " *",
+   "before": " might have misread the prompt's grammar.*\n    *   *Wait, I think I might have misread the prompt's grammar.*\n    *   *Wait, I think I might have misread the prompt's grammar.*\n    *   *Wait, I think I might have misread the prompt's grammar.*\n    *  ",
+   "after": "Wait, I think I might have misre",
+   "base": {
+    "13": [
+     "?*",
+     "…*",
+     "...*",
+     "-*",
+     ">*",
+     " *"
+    ],
+    "15": [
+     "Wait",
+     " Wait",
+     "wait",
+     "WAIT",
+     "?*",
+     "**?"
+    ],
+    "17": [
+     "Wait",
+     "…*",
+     "…**",
+     " Wait",
+     "wait",
+     "...*"
+    ],
+    "19": [
+     "Wait",
+     "wait",
+     " Wait",
+     "WAIT",
+     " WAIT",
+     "waiting"
+    ],
+    "21": [
+     "Wait",
+     "wait",
+     " Wait",
+     "WAIT",
+     "Waiting",
+     "waiting"
+    ],
+    "final": [
+     [
+      "Wait",
+      1.0
+     ],
+     [
+      "wait",
+      0.0
+     ],
+     [
+      "WAIT",
+      0.0
+     ],
+     [
+      "Okay",
+      0.0
+     ],
+     [
+      " Wait",
+      0.0
+     ],
+     [
+      " wait",
+      0.0
+     ]
+    ],
+    "p_wait": 0.999984622001648,
+    "p_close": 2.6204194369938705e-10
+   },
+   "edited": {
+    "13": [
+     "?*",
+     "…*",
+     "...*",
+     "-*",
+     ">*",
+     " *"
+    ],
+    "15": [
+     "Wait",
+     "”*,",
+     "\"*,",
+     "”*",
+     "wait",
+     " Wait"
+    ],
+    "17": [
+     "…*",
+     "Wait",
+     " Verification",
+     "...*",
+     "…**",
+     "Note"
+    ],
+    "19": [
+     "Wait",
+     "wait",
+     "WAIT",
+     " Wait",
+     "waiting",
+     " Waiting"
+    ],
+    "21": [
+     "Wait",
+     "wait",
+     " Wait",
+     "WAIT",
+     "waiting",
+     "Verification"
+    ],
+    "final": [
+     [
+      "Wait",
+      0.8436
+     ],
+     [
+      "I",
+      0.0094
+     ],
+     [
+      "Verification",
+      0.0083
+     ],
+     [
+      "This",
+      0.0073
+     ],
+     [
+      "Okay",
+      0.0057
+     ],
+     [
+      "Result",
+      0.0044
+     ]
+    ],
+    "p_wait": 0.8435736298561096,
+    "p_close": 7.154907507356256e-05
+   }
+  },
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_87",
+   "pos": 7814,
+   "token": "  ",
+   "before": " she has 5 + 3 = 8 years total.\n                                                *   Wait, if she has 5 years, she gets the raise.\n                                                *   The question asks for the salary *after* 3 more years.\n                                                *   This implies she has 5 + 3 = 8 years.\n                                                *",
+   "after": " Wait, if she has 5 years, she gets the raise.\n                                                *   Does the \"after three more years\" part refer to",
+   "base": {
+    "13": [
+     "?",
+     "?\"",
+     "?!",
+     "?\".",
+     "？",
+     "?**"
+    ],
+    "15": [
+     " Wait",
+     " wait",
+     "Wait",
+     " WAIT",
+     "WAIT",
+     " Waiting"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     "wait"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     " Waiting"
+    ],
+    "21": [
+     " Wait",
+     " WAIT",
+     " wait",
+     " Waiting",
+     "Wait",
+     "WAIT"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.9999
+     ],
+     [
+      " This",
+      0.0
+     ],
+     [
+      " ...",
+      0.0
+     ],
+     [
+      " Let",
+      0.0
+     ],
+     [
+      " Okay",
+      0.0
+     ],
+     [
+      " So",
+      0.0
+     ]
+    ],
+    "p_wait": 0.999906599521637,
+    "p_close": 1.8580049998551118e-10
+   },
+   "edited": {
+    "13": [
+     "?",
+     "?\"",
+     "?!",
+     "?\".",
+     "？",
+     "?**"
+    ],
+    "15": [
+     " Wait",
+     " wait",
+     "Wait",
+     " WAIT",
+     " Verification",
+     " Conclusion"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " Complexity",
+     " Notice",
+     " Completion"
+    ],
+    "19": [
+     " Wait",
+     " Logic",
+     " Calculation",
+     " WAIT",
+     " Simpl",
+     " Verification"
+    ],
+    "21": [
+     " Wait",
+     " This",
+     " Waiting",
+     " Logic",
+     " Final",
+     " Conclusion"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.5179
+     ],
+     [
+      " This",
+      0.0482
+     ],
+     [
+      " (",
+      0.0425
+     ],
+     [
+      " Let",
+      0.0258
+     ],
+     [
+      " *",
+      0.0242
+     ],
+     [
+      " I",
+      0.0189
+     ]
+    ],
+    "p_wait": 0.5178589224815369,
+    "p_close": 1.0432748240418732e-05
+   }
+  },
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_196",
+   "pos": 9930,
+   "token": "  ",
+   "before": "\n        *   Yes.\n        *   Is it possible that \"2 pounds\" is the *weight*?\n        *   Yes.\n        *   Is it possible that the question is \"How many pounds of carrots will *not* be used?\"\n        *   This is the same as calculating the remainder.\n        *",
+   "after": " Wait, is it possible that the question implies that \"200 pounds\" is the *total* weight?\n        *   Yes.",
+   "base": {
+    "13": [
+     "?",
+     "?\"",
+     "?!",
+     " ->",
+     " Conclusion",
+     "?]"
+    ],
+    "15": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     "wait"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "wait",
+     "WAIT"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "wait",
+     "WAIT"
+    ],
+    "21": [
+     " Wait",
+     " wait",
+     " WAIT",
+     "Wait",
+     " Waiting",
+     " Okay"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.9999
+     ],
+     [
+      " Okay",
+      0.0
+     ],
+     [
+      " WAIT",
+      0.0
+     ],
+     [
+      " ...",
+      0.0
+     ],
+     [
+      " Let",
+      0.0
+     ],
+     [
+      "Wait",
+      0.0
+     ]
+    ],
+    "p_wait": 0.9999315142631531,
+    "p_close": 1.4025305916653963e-10
+   },
+   "edited": {
+    "13": [
+     "?",
+     "?\"",
+     "?!",
+     " ->",
+     " Conclusion",
+     "?]"
+    ],
+    "15": [
+     " Wait",
+     " WAIT",
+     " wait",
+     "Wait",
+     "WAIT",
+     " Conclusion"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     " Waiting",
+     " Completion"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     " Waiting",
+     " Okay"
+    ],
+    "21": [
+     " Wait",
+     " wait",
+     " Final",
+     " WAIT",
+     " Okay",
+     " Waiting"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.8158
+     ],
+     [
+      " Okay",
+      0.0279
+     ],
+     [
+      " (",
+      0.0149
+     ],
+     [
+      " Let",
+      0.0132
+     ],
+     [
+      " I",
+      0.0103
+     ],
+     [
+      " Final",
+      0.0103
+     ]
+    ],
+    "p_wait": 0.8157687783241272,
+    "p_close": 7.29273961042054e-06
+   }
+  },
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_63",
+   "pos": 6764,
+   "token": "  ",
+   "before": "0 * 6 = $840.\n                            *   Wait, $140 * 6 = $840.\n                            *   Wait, $140 * 6 = $840.\n                            *   Wait, $140 * 6 = $840.\n                            *",
+   "after": " Wait, $140 * 6",
+   "base": {
+    "13": [
+     " ->",
+     " Wait",
+     "?",
+     "？**",
+     "?\"",
+     "?!"
+    ],
+    "15": [
+     " Wait",
+     " WAIT",
+     " wait",
+     "Wait",
+     " Waiting",
+     " Wow"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " Okay",
+     " Waiting",
+     " Wow"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " Waiting",
+     " wait",
+     "WAIT"
+    ],
+    "21": [
+     " Wait",
+     " Waiting",
+     " wait",
+     " WAIT",
+     "Wait",
+     " Ready"
+    ],
+    "final": [
+     [
+      " Wait",
+      1.0
+     ],
+     [
+      "Wait",
+      0.0
+     ],
+     [
+      " Okay",
+      0.0
+     ],
+     [
+      " Let",
+      0.0
+     ],
+     [
+      " WAIT",
+      0.0
+     ],
+     [
+      " wait",
+      0.0
+     ]
+    ],
+    "p_wait": 0.9999911189079285,
+    "p_close": 6.1626597921971005e-12
+   },
+   "edited": {
+    "13": [
+     " ->",
+     " Wait",
+     "?",
+     "？**",
+     "?\"",
+     "?!"
+    ],
+    "15": [
+     " Wait",
+     " Verification",
+     " Completion",
+     " Repeat",
+     " Wrap",
+     " Wow"
+    ],
+    "17": [
+     " Wait",
+     " Completion",
+     " Verification",
+     " Verified",
+     " Complexity",
+     " Wow"
+    ],
+    "19": [
+     " Wait",
+     " Waiting",
+     " Verification",
+     " wait",
+     " WAIT",
+     " Calculation"
+    ],
+    "21": [
+     " Wait",
+     " Waiting",
+     " Looks",
+     " wait",
+     " Result",
+     " WAIT"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.7477
+     ],
+     [
+      " $",
+      0.0329
+     ],
+     [
+      " This",
+      0.0226
+     ],
+     [
+      " Done",
+      0.0121
+     ],
+     [
+      " Result",
+      0.01
+     ],
+     [
+      " Okay",
+      0.0094
+     ]
+    ],
+    "p_wait": 0.7477251887321472,
+    "p_close": 1.1984599268544116e-06
+   }
+  },
+  {
+   "kind": "loop",
+   "id": "gsm8k_test_176",
+   "pos": 5790,
+   "token": "  ",
+   "before": " 240 Asians, and 80 are Japanese, then 160 are Chinese.\n            *   Wait, if 80 are Japanese, they are Asians.\n            *   So if there are 240 Asians, and 80 are Japanese, then 160 are Chinese.\n            *",
+   "after": " Wait",
+   "base": {
+    "13": [
+     "?!",
+     "?",
+     "?\"",
+     " Repeat",
+     " Wait",
+     "?]"
+    ],
+    "15": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     " Waiting"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     "wait"
+    ],
+    "19": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     "wait"
+    ],
+    "21": [
+     " Wait",
+     " WAIT",
+     " wait",
+     "Wait",
+     " This",
+     " Waiting"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.9992
+     ],
+     [
+      " This",
+      0.0006
+     ],
+     [
+      " Okay",
+      0.0001
+     ],
+     [
+      " ...",
+      0.0
+     ],
+     [
+      " Let",
+      0.0
+     ],
+     [
+      " I",
+      0.0
+     ]
+    ],
+    "p_wait": 0.9991682171821594,
+    "p_close": 1.5392051522233885e-10
+   },
+   "edited": {
+    "13": [
+     "?!",
+     "?",
+     "?\"",
+     " Repeat",
+     " Wait",
+     "?]"
+    ],
+    "15": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     " Repeat"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     " wait",
+     "WAIT",
+     " Waiting"
+    ],
+    "19": [
+     " Wait",
+     " WAIT",
+     " wait",
+     "Wait",
+     " Seems",
+     " Okay"
+    ],
+    "21": [
+     " Wait",
+     " This",
+     " Okay",
+     " WAIT",
+     " Seems",
+     " wait"
+    ],
+    "final": [
+     [
+      " Wait",
+      0.524
+     ],
+     [
+      " This",
+      0.2184
+     ],
+     [
+      " Okay",
+      0.0626
+     ],
+     [
+      " (",
+      0.038
+     ],
+     [
+      " I",
+      0.0261
+     ],
+     [
+      " It",
+      0.0158
+     ]
+    ],
+    "p_wait": 0.5239923000335693,
+    "p_close": 1.7232770233022165e-06
+   }
+  },
+  {
+   "kind": "stop",
+   "id": "gsm8k_test_167",
+   "pos": 6761,
+   "token": "\n",
+   "before": " Wait, I should probably mention that ages are positive integers.\n    Though mathematically solved, real-world context suggests positive integers.\n    But since the problem is abstract, integer constraint isn't strictly necessary, but helpful to justify uniqueness.\n    I won't overcomplicate it.\n    Just solve the algebra.\n    Done.",
+   "after": "</think>",
+   "base": {
+    "13": [
+     "<|endoftext|>",
+     "!</",
+     ".</",
+     ".",
+     " :)",
+     "!"
+    ],
+    "15": [
+     "!</",
+     ".</",
+     "!**",
+     "。</",
+     " Writing",
+     ".**"
+    ],
+    "17": [
+     " Wait",
+     " WAIT",
+     " Ready",
+     " Final",
+     "Ready",
+     "Wait"
+    ],
+    "19": [
+     "</think>",
+     " Response",
+     "   ",
+     " Ready",
+     "    \n",
+     " Final"
+    ],
+    "21": [
+     "   ",
+     "</think>",
+     "    \n",
+     " Double",
+     " Wait",
+     " Final"
+    ],
+    "final": [
+     [
+      "   ",
+      0.5485
+     ],
+     [
+      "</think>",
+      0.377
+     ],
+     [
+      "    \n",
+      0.0742
+     ],
+     [
+      "\n",
+      0.0
+     ],
+     [
+      "<",
+      0.0
+     ],
+     [
+      "```",
+      0.0
+     ]
+    ],
+    "p_wait": 9.179359494737582e-07,
+    "p_close": 0.3770003318786621
+   },
+   "edited": {
+    "13": [
+     "<|endoftext|>",
+     "!</",
+     ".</",
+     ".",
+     " :)",
+     "!"
+    ],
+    "15": [
+     "!</",
+     ".</",
+     "。</",
+     " Writing",
+     "!**",
+     ".**"
+    ],
+    "17": [
+     " Ready",
+     " WAIT",
+     " Final",
+     " Wait",
+     "Ready",
+     "Final"
+    ],
+    "19": [
+     "</think>",
+     " Response",
+     "   ",
+     "    \n",
+     " Ready",
+     " Output"
+    ],
+    "21": [
+     "   ",
+     "</think>",
+     "    \n",
+     " Double",
+     " Final",
+     "   \n"
+    ],
+    "final": [
+     [
+      "</think>",
+      0.5848
+     ],
+     [
+      "   ",
+      0.313
+     ],
+     [
+      "    \n",
+      0.1016
+     ],
+     [
+      "\n",
+      0.0001
+     ],
+     [
+      "<",
+      0.0001
+     ],
+     [
+      "```",
+      0.0001
+     ]
+    ],
+    "p_wait": 7.338768455156242e-07,
+    "p_close": 0.5847905278205872
+   }
+  },
+  {
+   "kind": "stop",
+   "id": "gsm8k_test_170",
+   "pos": 6232,
+   "token": "\n",
+   "before": " must assume \"uniform\" refers to the single item.\n        \n        Wait, could \"total\" refer to the cost of the hat + jacket + pants?\n        Yes.\n        Could it refer to the cost of the hat + jacket + pants + pants?\n        No.\n        \n        I'll stick with $150.",
+   "after": "</think>",
+   "base": {
+    "13": [
+     "<|endoftext|>",
+     ".",
+     "ครับ",
+     " text",
+     "!",
+     "。"
+    ],
+    "15": [
+     "?!",
+     "-read",
+     "板书",
+     "!!!!!",
+     "?</",
+     "ครับ"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     "wait",
+     " wait",
+     "!**"
+    ],
+    "19": [
+     "        \n",
+     "</think>",
+     "       ",
+     "    \n",
+     "   \n",
+     "**"
+    ],
+    "21": [
+     "       ",
+     "        \n",
+     "    \n",
+     "</think>",
+     "      \n",
+     "   \n"
+    ],
+    "final": [
+     [
+      "        \n",
+      0.7038
+     ],
+     [
+      "</think>",
+      0.157
+     ],
+     [
+      "       ",
+      0.1386
+     ],
+     [
+      "    \n",
+      0.0002
+     ],
+     [
+      "            \n",
+      0.0001
+     ],
+     [
+      "       \n",
+      0.0001
+     ]
+    ],
+    "p_wait": 1.2536588656075764e-06,
+    "p_close": 0.15703052282333374
+   },
+   "edited": {
+    "13": [
+     "<|endoftext|>",
+     ".",
+     "ครับ",
+     " text",
+     "!",
+     "。"
+    ],
+    "15": [
+     "?!",
+     "-read",
+     "板书",
+     "!!!!!",
+     "?</",
+     "ครับ"
+    ],
+    "17": [
+     " Wait",
+     "Wait",
+     " WAIT",
+     "wait",
+     " wait",
+     "WAIT"
+    ],
+    "19": [
+     "        \n",
+     "       ",
+     "</think>",
+     "    \n",
+     "   \n",
+     "       \n"
+    ],
+    "21": [
+     "       ",
+     "        \n",
+     "    \n",
+     "      \n",
+     "</think>",
+     "   \n"
+    ],
+    "final": [
+     [
+      "        \n",
+      0.6065
+     ],
+     [
+      "</think>",
+      0.2865
+     ],
+     [
+      "       ",
+      0.1054
+     ],
+     [
+      "    \n",
+      0.0004
+     ],
+     [
+      "            \n",
+      0.0002
+     ],
+     [
+      "```",
+      0.0001
+     ]
+    ],
+    "p_wait": 3.1310073609347455e-06,
+    "p_close": 0.2864781320095062
+   }
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+base-bf16    correct 8/40  finished 8  correct when finished 8/8  median tokens when finished 7916.5  loops 29  cut at 16k 3
+a1-bf16      correct 13/40  finished 16  correct when finished 13/16  median tokens when finished 6832.0  loops 19  cut at 16k 5
+p50c-bf16    correct 19/40  finished 24  correct when finished 19/24  median tokens when finished 7801.5  loops 4  cut at 16k 12
+base-Q4_K_M  correct 8/40  finished 8  correct when finished 8/8  median tokens when finished 5686.0  loops 27  cut at 16k 5
+p50c-Q4_K_M  correct 16/40  finished 29  correct when finished 16/29  median tokens when finished 7730  loops 1  cut at 16k 10
+a1-bf16 right where base-bf16 wrong: 9;  base-bf16 right where a1-bf16 wrong: 4
+p50c-bf16 right where a1-bf16 wrong: 9;  a1-bf16 right where p50c-bf16 wrong: 3
+p50c-bf16 right where base-bf16 wrong: 12;  base-bf16 right where p50c-bf16 wrong: 1
+p50c-Q4_K_M right where p50c-bf16 wrong: 3;  p50c-bf16 right where p50c-Q4_K_M wrong: 6
+base-Q4_K_M right where base-bf16 wrong: 4;  base-bf16 right where base-Q4_K_M wrong: 4
